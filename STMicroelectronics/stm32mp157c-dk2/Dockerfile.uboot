@@ -26,4 +26,4 @@ RUN echo "Build u-boot" \
 
 FROM scratch
 COPY --from=build /src/u-boot/u-boot.stm32 /
-ENTRYPOINT ["deploy"]
+ENTRYPOINT ["input"]
