@@ -13,17 +13,18 @@ RUN echo "# log: Base Image" \
 RUN echo "# log: Install base requirements" \
     && apt-get install -y git
 
-RUN echo "Clone u-boot" \
-    && git clone -b v2022.10 https://github.com/u-boot/u-boot --depth=1
-
 RUN echo "# log: Install u-boot build requirements" \
-    && apt-get install -y bc bison build-essential flex gcc-arm-linux-gnueabihf libssl-dev python3-dev python3-minimal python3-setuptools swig
+    && apt-get install -y bc bison build-essential flex gcc-arm-linux-gnueabihf libgnutls28-dev libssl-dev python3-dev python3-minimal python3-setuptools swig uuid-dev
+
+RUN echo "Clone u-boot" \
+    && git clone -b v2025.01 https://github.com/u-boot/u-boot --depth=1
 
 RUN echo "Build u-boot" \
-    && make -C u-boot ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- distclean \
-    && make -C u-boot ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- stm32mp15_trusted_defconfig \
-    && make -C u-boot -j4 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- DEVICE_TREE=stm32mp157c-dk2 all
+    && make -C ./u-boot/ CROSS_COMPILE=arm-linux-gnueabihf- distclean \
+    && make -C ./u-boot/ CROSS_COMPILE=arm-linux-gnueabihf- stm32mp15_trusted_defconfig \
+    && make -C ./u-boot/ -j4 CROSS_COMPILE=arm-linux-gnueabihf- DEVICE_TREE=stm32mp157c-dk2 all
 
 FROM scratch
+COPY --from=build /src/u-boot/u-boot-nodtb.bin /
 COPY --from=build /src/u-boot/u-boot.stm32 /
 ENTRYPOINT ["input"]

@@ -1,9 +1,15 @@
 #!/bin/bash
 
-#docker build --no-cache --progress=plain --output=deploy -f Dockerfile.uboot .
-#docker build --progress=plain --output=deploy -f Dockerfile.uboot .
+if [ -d ./input/ ] ; then
+	sudo rm -rf ./input/ || true
+fi
 
-docker build --output=input -f Dockerfile.uboot .
+wfile="Dockerfile.uboot"
+
+#docker build --no-cache --progress=plain --output=input -f ${wfile} .
+#docker build --progress=plain --output=input -f ${wfile} .
+
+docker build --output=input -f ${wfile} .
 
 if [ -f /usr/bin/tree ] ; then
 	tree -hD ./input/
